@@ -24,12 +24,11 @@ class LightController:
         if cls.pwn_debug:
             SPWM.toggle_debug()
         cls.reset_spwm()
-        SPWM.start(cls.RED, 0)
-        SPWM.start(cls.GREEN, 0)
-        SPWM.start(cls.BLUE, 0)
-        SPWM.set_frequency(cls.RED, 100)
-        SPWM.set_frequency(cls.GREEN, 100)
-        SPWM.set_frequency(cls.BLUE, 100)
+        frequency = 100
+        polarity = 0 if cls.inverted else 1
+        SPWM.start(cls.RED, 0, frequency=frequency, polarity=polarity)
+        SPWM.start(cls.GREEN, 0, frequency=frequency, polarity=polarity)
+        SPWM.start(cls.BLUE, 0, frequency=frequency, polarity=polarity)
         cls.set_color(color=Color.BLACK)
 
     @classmethod

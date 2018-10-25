@@ -3,6 +3,8 @@ import os
 from os import path
 from os.path import expanduser
 
+from util.logger import Logger
+
 
 class Config:
     CONFIG_DIR = expanduser("~/.config")
@@ -40,15 +42,18 @@ class Config:
                 os.makedirs(cls.CONFIG_DIR)
             with open(cls.CONFIG_PATH, "r") as config:
                 text = config.read()
-        except OSError:
-            pass
+        except OSError as e:
+            Logger.get_logger().exception(e)
         if text is None:
+            Logger.get_logger().warn("Empty config file: {0}".format(cls.CONFIG_PATH))
             return {}
         try:
             config_dict = json.loads(text)
-            if type(config_dict) != "dict":
+            if type(config_dict) is not dict:
+                Logger.get_logger().warn("Config invalid format: {0}".format(cls.CONFIG_PATH))
                 return {}
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as e:
+            Logger.get_logger().exception(e)
             return {}
         return config_dict
 

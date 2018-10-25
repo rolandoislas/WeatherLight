@@ -1,15 +1,11 @@
 import argparse
 import logging
 import signal
-import time
 
 from util.light_controller import LightController
-from util.weather_watcher import WeatherWatcher
 from util.logger import Logger
-
-from data.color import Color
-
 from util.switch_poller import SwitchPoller
+from util.weather_watcher import WeatherWatcher
 
 
 def signal_handler(sig, frame):

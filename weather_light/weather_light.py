@@ -4,7 +4,6 @@ import signal
 
 from util.light_controller import LightController
 from util.logger import Logger
-from util.switch_poller import SwitchPoller
 from util.weather_watcher import WeatherWatcher
 
 
@@ -16,7 +15,6 @@ def signal_handler(sig, frame):
     :return: None
     """
     LightController.reset_spwm()
-    SwitchPoller.reset_gpio()
 
 
 def parse_args():

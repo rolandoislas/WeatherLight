@@ -55,32 +55,59 @@ class WeatherWatcher:
         Attempts to fetch and parses the forecast data
         :return: weather type string or None on error
         """
-        response = requests.get("https://api.openweathermap.org/data/2.5/forecast?id={0}&mode=json&appid={1}"
-                                .format(Config.get(Config.CITY_ID, default_config.CITY_ID), self.API_KEY))
+        realtime = Config.get(Config.FORECAST_OFFSET_KEY, default_config.FORECAST_OFFSET) == 0
+        if realtime:
+            response = requests.get("https://api.openweathermap.org/data/2.5/weather?id={0}&mode=json&appid={1}"
+                                    .format(Config.get(Config.CITY_ID, default_config.CITY_ID), self.API_KEY))
+        else:
+            response = requests.get("https://api.openweathermap.org/data/2.5/forecast?id={0}&mode=json&appid={1}"
+                                    .format(Config.get(Config.CITY_ID, default_config.CITY_ID), self.API_KEY))
         if response.status_code != 200:
             Logger.get_logger().warn("Failed request to forecast endpoint.")
             Logger.get_logger().debug(response.text)
             return None
         try:
             data = response.json()
-            if type(data.get("list")) is list:
+            if realtime and type(data.get("list")) is list:
                 for forecast_index, forecast in enumerate(data.get("list")):
-                    if type(forecast.get("dt")) is int and type(forecast.get("weather")) is list:
-                        weather_list = forecast.get("weather")
-                        if type(weather_list) is list and len(weather_list) > 0:
-                            datetime = forecast.get("dt")
-                            offset = Config.get(Config.FORECAST_OFFSET_KEY, default_config.FORECAST_OFFSET)
-                            if abs(time.time() - datetime) < offset and forecast_index < len(data.get("list")) - 1:
-                                continue
-                            weather = weather_list[0]
-                            if type(weather) is dict and type(weather.get("id")) is int:
-                                return weather.get("id")
+                    ignore_offset = forecast_index == len(data.get("list")) - 1
+                    valid, weather_id = self.parse_weather_id(forecast, ignore_offset)
+                    if not valid:
+                        continue
+                    return weather_id
+            elif realtime and type(data) is dict:
+                valid, weather_id = self.parse_weather_id(data, True)
+                if valid:
+                    return weather_id
             else:
                 Logger.get_logger().debug("Forecast response missing list array field")
         except ValueError as e:
             Logger.get_logger().exception(e)
             return None
         return None
+
+    @staticmethod
+    def parse_weather_id(forecast, ignore_offset):
+        """
+        Parse a full weather object
+        This the root object and should not be confused with the sub weather object.
+        :param ignore_offset:
+        :param forecast: root weather object (dt, weather, clouds, name, cod, etc in root)
+        :return: tuple(bool valid, int weather_Id) The valid bool will be false if the structure is not valid
+        or the time
+        """
+        if type(forecast.get("dt")) is int and type(forecast.get("weather")) is list:
+            weather_list = forecast.get("weather")
+            if type(weather_list) is list and len(weather_list) > 0:
+                datetime = forecast.get("dt")
+                offset = Config.get(Config.FORECAST_OFFSET_KEY, default_config.FORECAST_OFFSET)
+                current_offset = abs(time.time() - datetime)
+                if current_offset >= offset and not ignore_offset:
+                    return False, None
+                weather = weather_list[0]
+                if type(weather) is dict and type(weather.get("id")) is int:
+                    return True, weather.get("id")
+        return False, None
 
     @staticmethod
     def handle_weather_code(code):

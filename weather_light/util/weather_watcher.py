@@ -53,7 +53,7 @@ class WeatherWatcher:
                     except Exception as e:
                         Logger.get_logger().exception(e)
                     self.last_update_time = time.time()
-                else:
+                elif self.cached_weather_code is not None:
                     self.last_update_time = time.time() - self.RETRY_INTERVAL
             elif self.cached_weather_code is not None:
                 try:

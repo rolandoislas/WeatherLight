@@ -199,7 +199,7 @@ Config = function(){
                 config["city_name"] = item.value;
             }
             else if (key === "forecast_offset") {
-                config[key] = parseInt(item.value);
+                config[key] = parseInt(item.value) * 60 * 60;
             }
         }
         // Submit

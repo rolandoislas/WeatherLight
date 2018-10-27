@@ -30,7 +30,7 @@ class ConfigServerHandler(BaseHTTPRequestHandler):
         content_type = content_type if content_type is not None else "text/html"
         status_code = status_code if status_code is not None else 200
         status_message = status_message if status_message is not None else "OK"
-        body = body if body is not None else ""
+        body = body if body is not None else b""
         self.send_response(status_code, status_message)
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", len(body))

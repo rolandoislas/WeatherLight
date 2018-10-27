@@ -162,6 +162,8 @@ class ConfigServerHandler(BaseHTTPRequestHandler):
             return cls.post_light(body, headers, content_type)
         elif path == "/config/reset":
             return cls.post_reset(body, headers, content_type)
+        elif path == "/config/shutdown":
+            return cls.post_shutdown(body, headers, content_type)
         return False, 404, "Not Found", "The requested page was not found on this server", "text/plain"
 
     def get_config(self):
@@ -249,4 +251,9 @@ class ConfigServerHandler(BaseHTTPRequestHandler):
         """
         Config.set_config(Config.create_empty_config())
         Config.load()
+        return True, 200, "OK", b"OK", None
+
+    @classmethod
+    def post_shutdown(cls, body, headers, content_type):
+        os.system("shutdown now")
         return True, 200, "OK", b"OK", None

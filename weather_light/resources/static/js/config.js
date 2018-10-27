@@ -294,6 +294,17 @@ Config = function(){
         }
     }
 
+    function handleShutdown() {
+        let doReset = window.confirm("WeatherLight will be turned off. Continue?");
+        if (doReset) {
+            reset();
+            showMessage("Powering Off");
+            let request = new XMLHttpRequest();
+            request.open("POST", "/config/shutdown", true);
+            request.send();
+        }
+    }
+
     function main() {
         let cityChooser = document.getElementById("city-chooser");
         cityChooser.addEventListener("click", function (event) {
@@ -305,6 +316,8 @@ Config = function(){
         citySearchForm.addEventListener("submit", handleSearchSubmit);
         let resetButton = document.getElementById("reset");
         resetButton.addEventListener("click", handleReset);
+        let powerButton = document.getElementById("shutdown");
+        powerButton.addEventListener("click", handleShutdown);
         let form = document.getElementById("main");
         form.addEventListener("submit", handleFormSubmit);
         loadConfig(populateConfigElements);

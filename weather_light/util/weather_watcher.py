@@ -17,6 +17,8 @@ class WeatherWatcher:
         self.running = False
         self.last_update_time = 0
         self.cached_weather_code = None
+        self.city_id = None
+        self.forecast_offset = None
 
     def start(self):
         """
@@ -37,7 +39,12 @@ class WeatherWatcher:
         while self.running:
             time_since_last_update = time.time() - self.last_update_time
             # Update every three hours
-            if time_since_last_update >= self.UPDATE_INTERVAL:
+            city_id = Config.get(Config.CITY_ID)
+            forecast_offset = Config.get(Config.FORECAST_OFFSET_KEY)
+            if time_since_last_update >= self.UPDATE_INTERVAL or city_id != self.city_id \
+                    or forecast_offset != self.forecast_offset:
+                self.city_id = Config.get(Config.CITY_ID)
+                self.forecast_offset = Config.get(Config.FORECAST_OFFSET_KEY)
                 weather_code = self.get_weather_code()
                 if weather_code is not None:
                     self.cached_weather_code = weather_code
@@ -73,7 +80,7 @@ class WeatherWatcher:
             return None
         try:
             data = response.json()
-            if realtime and type(data.get("list")) is list:
+            if not realtime and type(data.get("list")) is list:
                 for forecast_index, forecast in enumerate(data.get("list")):
                     ignore_offset = forecast_index == len(data.get("list")) - 1
                     valid, weather_id = self.parse_weather_id(forecast, ignore_offset)
@@ -85,7 +92,7 @@ class WeatherWatcher:
                 if valid:
                     return weather_id
             else:
-                Logger.get_logger().debug("Forecast response missing list array field")
+                Logger.get_logger().debug("Forecast/weather response invalid")
         except ValueError as e:
             Logger.get_logger().exception(e)
             return None

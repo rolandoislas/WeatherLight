@@ -2,13 +2,10 @@ import time
 from threading import Thread
 
 import requests
-from util.logger import Logger
-
 from data import default_config
 from util.config import Config
-
-from data.color import Color
 from util.light_controller import LightController
+from util.logger import Logger
 
 
 class WeatherWatcher:
@@ -19,6 +16,7 @@ class WeatherWatcher:
     def __init__(self):
         self.running = False
         self.last_update_time = 0
+        self.cached_weather_code = None
 
     def start(self):
         """
@@ -42,6 +40,7 @@ class WeatherWatcher:
             if time_since_last_update >= self.UPDATE_INTERVAL:
                 weather_code = self.get_weather_code()
                 if weather_code is not None:
+                    self.cached_weather_code = weather_code
                     try:
                         self.handle_weather_code(weather_code)
                     except Exception as e:
@@ -49,6 +48,12 @@ class WeatherWatcher:
                     self.last_update_time = time.time()
                 else:
                     self.last_update_time = time.time() - self.RETRY_INTERVAL
+            elif self.cached_weather_code is not None:
+                try:
+                    self.handle_weather_code(self.cached_weather_code)
+                except Exception as e:
+                    Logger.get_logger().exception(e)
+            time.sleep(10)
 
     def get_weather_code(self):
         """

@@ -160,6 +160,8 @@ class ConfigServerHandler(BaseHTTPRequestHandler):
             return cls.post_config(body, headers, content_type)
         elif path == "/light":
             return cls.post_light(body, headers, content_type)
+        elif path == "/config/reset":
+            return cls.post_reset(body, headers, content_type)
         return False, 404, "Not Found", "The requested page was not found on this server", "text/plain"
 
     def get_config(self):
@@ -234,4 +236,17 @@ class ConfigServerHandler(BaseHTTPRequestHandler):
             LightController.set_color(body_json["r"], body_json["g"], body_json["b"])
         except ValueError:
             return False, 400, "Bad Request", "Invalid JSON body", None
+        return True, 200, "OK", b"OK", None
+
+    @classmethod
+    def post_reset(cls, body, headers, content_type):
+        """
+        Handle a reset config post request
+        :param content_type: content_type
+        :param body: post body
+        :param headers: post headers
+        :return: success, status code, message, response_body, content_type
+        """
+        Config.set_config(Config.create_empty_config())
+        Config.load()
         return True, 200, "OK", b"OK", None

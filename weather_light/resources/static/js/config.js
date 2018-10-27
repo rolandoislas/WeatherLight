@@ -280,6 +280,20 @@ Config = function(){
         request.send();
     }
 
+    function handleReset() {
+        let doReset = window.confirm("This will reset all settings to their defaults. Continue?");
+        if (doReset) {
+            reset();
+            showMessage("Resetting");
+            let request = new XMLHttpRequest();
+            request.addEventListener("loadend", function () {
+                loadConfig(populateConfigElements);
+            });
+            request.open("POST", "/config/reset", true);
+            request.send();
+        }
+    }
+
     function main() {
         let cityChooser = document.getElementById("city-chooser");
         cityChooser.addEventListener("click", function (event) {
@@ -289,6 +303,8 @@ Config = function(){
         });
         let citySearchForm = document.getElementById("city-search-form");
         citySearchForm.addEventListener("submit", handleSearchSubmit);
+        let resetButton = document.getElementById("reset");
+        resetButton.addEventListener("click", handleReset);
         let form = document.getElementById("main");
         form.addEventListener("submit", handleFormSubmit);
         loadConfig(populateConfigElements);

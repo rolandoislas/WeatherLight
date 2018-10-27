@@ -1,0 +1,41 @@
+<html>
+<head>
+    <title>WeatherLight Config</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <form id="main" action="#">
+        <h1>WeatherLight Config</h1>
+        <h2>General</h2>
+        <div id="general">
+        </div>
+        <h2>Colors</h2>
+        <div id="colors">
+            <!--<label>
+                Thunderstorm
+                <input type="text" class="color" value="rgb(162, 63, 3)" />
+            </label><br>-->
+        </div>
+        <p id="message"></p>
+        <input type="submit" value="Save" class="save-button" />
+    </form>
+    <a href="third_party.txt" class="oss">Open Source Software</a>
+    <div id="city-chooser" class="city-chooser">
+        <div class="city-chooser-inner">
+            <form id="city-search-form">
+                <label>
+                    Search
+                    <input type="search" id="city-search" />
+                    <img src="img/ajax-loader.gif" class="loading-image" id="loading-image" />
+                </label>
+            </form>
+            <div id="city-list">
+                <!--<p class="city">London, GB</p>-->
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="vendor/js/color.all.min.js"></script>
+    <script type="text/javascript" src="vendor/js/jsColorPicker.min.js"></script>
+    <script type="text/javascript" src="js/config.js"></script>
+</body>
+</html>

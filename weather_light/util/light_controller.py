@@ -63,8 +63,13 @@ class LightController:
         :param color: array of rgb
         :return: None
         """
-        if type(color) is Color:
-            color_val = color.value
+        if color is not None:
+            if type(color) is Color:
+                color_val = color.value
+            elif type(color) is list and len(color) == 3:
+                color_val = color
+            else:
+                color_val = [255, 255, 255]
             r = color_val[0]
             g = color_val[1]
             b = color_val[2]

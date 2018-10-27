@@ -1,15 +1,12 @@
 import json
 import os
-import select
-import time
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 
 import requests
-from util.logger import Logger
-
 from util.config import Config
-
+from util.light_controller import LightController
+from util.logger import Logger
 from util.weather_watcher import WeatherWatcher
 
 
@@ -161,6 +158,8 @@ class ConfigServerHandler(BaseHTTPRequestHandler):
         """
         if path == "/config":
             return cls.post_config(body, headers, content_type)
+        elif path == "/light":
+            return cls.post_light(body, headers, content_type)
         return False, 404, "Not Found", "The requested page was not found on this server", "text/plain"
 
     def get_config(self):
@@ -191,6 +190,7 @@ class ConfigServerHandler(BaseHTTPRequestHandler):
                 return False, 400, "Bad Request", "Invalid config format", None
             else:
                 Config.set_config(body_json)
+                Config.load()
         except ValueError:
             return False, 400, "Bad Request", "Invalid JSON body", None
         if not Config.verify_config(body_json):
@@ -212,3 +212,26 @@ class ConfigServerHandler(BaseHTTPRequestHandler):
             "cnt": "5"
         })
         return response.content, response.headers.get("Content-Type"), response.status_code, response.reason
+
+    @classmethod
+    def post_light(cls, body, headers, content_type):
+        """
+        Post light JSON RGB values
+        :param content_type: content_type
+        :param body: post body
+        :param headers: post headers
+        :return: success, status code, message, response_body, content_type
+        """
+        if content_type != "application/json":
+            return False, 400, "Bad request", "Invalid content type", None
+        if body is None:
+            return False, 400, "Bad Request", "Missing JSON body", None
+        try:
+            body_json = json.loads(body)
+            if type(body_json.get("r")) is not int or type(body_json.get("g")) is not int or \
+                    type(body_json.get("b")) is not int:
+                return False, 400, "Bad Request", "Invalid JSON format", None
+            LightController.set_color(body_json["r"], body_json["g"], body_json["b"])
+        except ValueError:
+            return False, 400, "Bad Request", "Invalid JSON body", None
+        return True, 200, "OK", b"OK", None

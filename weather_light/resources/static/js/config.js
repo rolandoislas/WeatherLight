@@ -161,7 +161,7 @@ Config = function(){
         let config = {};
         // Populate colors
         let colors = document.getElementById("colors").getElementsByClassName("color");
-        let rgbRegex = new RegExp("rgb\\(([0-9]{1,3}),\\s?([0-9]{1,3}),\\s?([0-9]{1,3})\\)");
+        let rgbRegex = new RegExp("rgba?\\(([0-9]{1,3}),\\s?([0-9]{1,3}),\\s?([0-9]{1,3})\\s?[^)]*\\)");
         for (let colorIndex = 0; colorIndex < colors.length; colorIndex++) {
             let color = colors[colorIndex];
             let parent = color.parentElement;

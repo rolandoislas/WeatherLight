@@ -3,6 +3,11 @@
     border-bottom-style: hidden;
 }
 
+.color-left {
+    margin: 0 0 0 5px;
+    border-bottom-style: hidden;
+}
+
 .label-text {
     float: left;
     position: absolute;

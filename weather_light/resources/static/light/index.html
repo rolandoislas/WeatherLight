@@ -1,0 +1,50 @@
+<html>
+<head>
+    <title>WeatherLight Test RGB</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <h1>WeatherLight</h1>
+    <h2>Test RGB</h2>
+    <p>While this page is open, the light color will be set to the following color:</p>
+    <label>
+        Light Color
+        <input type="text" value="rgb(0, 0, 255)" class="color-left" id="color">
+    </label>
+    <br>
+    <a href="/" class="oss">Home</a>
+
+    <script type="text/javascript" src="../vendor/js/color.all.min.js"></script>
+    <script type="text/javascript" src="../vendor/js/jsColorPicker.min.js"></script>
+    <script type="application/javascript">
+        function main() {
+            let colors = jsColorPicker('input.color-left', {
+                customBG: '#fff',
+                readOnly: true,
+                init: function (elm, colors) {
+                    elm.style.backgroundColor = elm.value;
+                    elm.style.color = colors.rgbaMixCustom.luminance > 0.22 ? '#222' : '#ddd';
+                }
+            });
+            window.setInterval(function () {
+                let rgbRegex = new RegExp("rgba?\\(([0-9]{1,3}),\\s?([0-9]{1,3}),\\s?([0-9]{1,3})\\s?[^)]*\\)");
+                let color = document.getElementById("color");
+                let matches = color.value.match(rgbRegex);
+                if (matches) {
+                    let rgb = {
+                        "r": parseInt(matches[1]),
+                        "g": parseInt(matches[2]),
+                        "b": parseInt(matches[3])
+                    };
+                    let request = new XMLHttpRequest();
+                    request.open("POST", "/light", true);
+                    request.setRequestHeader("Content-Type", "application/json");
+                    request.send(JSON.stringify(rgb));
+                }
+            }, 1000)
+        }
+
+        window.addEventListener("load", main)
+    </script>
+</body>
+</html>

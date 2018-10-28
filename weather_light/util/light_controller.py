@@ -25,7 +25,7 @@ class LightController:
             SPWM.toggle_debug()
         cls.reset_spwm()
         frequency = 100
-        polarity = 0 if cls.inverted else 1
+        polarity = 0
         SPWM.start(cls.RED, 0, frequency=frequency, polarity=polarity)
         SPWM.start(cls.GREEN, 0, frequency=frequency, polarity=polarity)
         SPWM.start(cls.BLUE, 0, frequency=frequency, polarity=polarity)

@@ -26,10 +26,9 @@ optional arguments:
 
 Note on the inverted flag: 
 
-The default polarity on the PWM pins will be
- set to positive with with the duty cycle going from 0 to 100 percent
- for off and on states. The inverted flag will invert the polarity
- and the duty cycle will be 100 to 0 percent for off and on.
+The default PWM duty cycle will be from 0 to 100 percent
+ for off and on states. The inverted flag will invert the duty cycle 
+ and will be 100 to 0 percent for off and on.
  
 This is useful for switching between common anode and common cathode
  RGB LEDs.
